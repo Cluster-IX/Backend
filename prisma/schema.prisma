@@ -1,0 +1,62 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+enum Choice {
+  a
+  b
+  c
+  d
+}
+
+model Siswa {
+  id     Int      @id @default(autoincrement())
+  nrp    String
+  nama   String
+  Result Result[]
+}
+
+model Kota {
+  id   Int    @id @default(autoincrement())
+  nama String
+}
+
+model Mata_Pelajaran {
+  id   Int    @id @default(autoincrement())
+  nama String
+  Soal Soal[]
+}
+
+model Soal {
+  id            Int            @id @default(autoincrement())
+  id_mapel      Int
+  jawaban_benar Choice
+  konten        String
+  pilihan_a     String
+  pilihan_b     String
+  pilihan_c     String
+  pilihan_d     String
+  mapel         Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
+  Result        Result[]
+}
+
+model Result {
+  id               Int     @id @default(autoincrement())
+  id_siswa         Int
+  id_soal          Int
+  jawaban          Choice
+  is_jawaban_benar Boolean @default(false)
+  siswa            Siswa   @relation(fields: [id_siswa], references: [id])
+  soal             Soal    @relation(fields: [id_soal], references: [id])
+}
+
+model Test {
+  id         Int @id @default(autoincrement())
+  id_siswa   Int
+  id_jawaban Int
+}

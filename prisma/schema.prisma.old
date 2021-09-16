@@ -1,0 +1,57 @@
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Siswa {
+  id     Int      @id @default(autoincrement())
+  nrp    String
+  nama   String
+  Result Result[]
+}
+
+model Kota {
+  id   Int    @id @default(autoincrement())
+  nama String
+}
+
+model Mata_Pelajaran {
+  id   Int    @id @default(autoincrement())
+  nama String
+  Soal Soal[]
+}
+
+model Jawaban {
+  id      Int      @id @default(autoincrement())
+  id_soal Int
+  soal          Soal     @relation(fields: [id_soal], references: [id])
+  jawaban_benar Boolean  @default(false)
+  Result        Result[]
+  Result  Result[]
+}
+
+model Soal {
+  id            Int            @id @default(autoincrement())
+  id_mapel      Int
+  mapel         Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
+  konten        String
+  Jawaban  Jawaban[]
+}
+
+model Result {
+  id         Int     @id @default(autoincrement())
+  id_siswa   Int
+  id_jawaban Int
+  siswa      Siswa   @relation(fields: [id_siswa], references: [id])
+  jawaban    Jawaban @relation(fields: [id_jawaban], references: [id])
+}
+
+model Test {
+  id         Int @id @default(autoincrement())
+  id_siswa   Int
+  id_jawaban Int
+}

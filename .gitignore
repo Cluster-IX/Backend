@@ -1,0 +1,4 @@
+node_modules
+mysql_dump
+prisma/migrations
+# .env
