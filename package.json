@@ -5,7 +5,8 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "migrate": "prisma migrate dev --name init"
+    "migrate": "prisma migrate dev --name init",
+    "import": "node scripts/js/import.js"
   },
   "keywords": [],
   "author": "",
@@ -15,6 +16,7 @@
   },
   "dependencies": {
     "@prisma/client": "^3.0.2",
+    "csv-parse": "^4.16.3",
     "dotenv": "^10.0.0"
   }
 }
