@@ -5,7 +5,7 @@ services:
     image: mysql:5.7
     volumes: 
       - './mysql_dump:/var/lib/mysql'
-      - './shared:/shared'
+      - './data:/data'
     environment:
       UPLOAD_LIMIT: 1G
       MYSQL_ROOT_PASSWORD: "verysecret"
