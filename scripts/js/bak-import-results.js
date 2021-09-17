@@ -15,8 +15,7 @@ const prisma = new PrismaClient();
 
   const choices = ["a", "b", "c", "d"];
 
-  const endVal = initVal * maxSiswa;
-  const startVal = endVal - maxSiswa + 1;
+  let tempData = [];
 
   for (let idSiswa = startVal; idSiswa <= endVal; idSiswa++) {
     let data = [];
@@ -40,9 +39,18 @@ const prisma = new PrismaClient();
       });
     }
 
-    await prisma.result
-      .createMany({ data })
-      .catch(() => console.log("error: ", idSiswa));
+    tempData.push(data);
+    // console.log(tempData.flat())
+    // return
+
+    console.log(tempData.length);
+    if (tempData.length == 10) {
+      await prisma.result
+        .createMany({ data: [...tempData.flat()] })
+        // .catch(() => console.log("error: ", idSiswa));
+        .catch((e) => console.log(e));
+      tempData = [];
+    }
   }
 })(process.argv[2]);
 
