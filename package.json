@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "start": "node ./src/index.js",
+    "dev": "nodemon ./src/index.js",
     "test": "echo \"Error: no test specified\" && exit 1",
     "migrate": "prisma migrate dev --name init",
     "import": "node scripts/js/import.js"
@@ -12,11 +14,14 @@
   "author": "",
   "license": "ISC",
   "devDependencies": {
+    "nodemon": "^2.0.12",
     "prisma": "^3.0.2"
   },
   "dependencies": {
     "@prisma/client": "^3.0.2",
+    "cors": "^2.8.5",
     "dotenv": "^10.0.0",
-    "express": "^4.17.1"
+    "express": "^4.17.1",
+    "http-status-code": "^2.1.0"
   }
 }
