@@ -1,3 +1,5 @@
+// Combine single name into fullname (first, middle, last name) 
+
 const { readFile, writeFile } = require("fs/promises");
 const path = require("path");
 
