@@ -8,10 +8,11 @@ datasource db {
 }
 
 model Siswa {
-  id     Int      @id @default(autoincrement())
-  nrp    String
-  nama   String
-  Result Result[]
+  id      Int       @id @default(autoincrement())
+  nrp     String
+  nama    String
+  Jawaban Jawaban[]
+  Score   Score[]
 }
 
 model Kota {
@@ -20,10 +21,10 @@ model Kota {
 }
 
 model Mata_Pelajaran {
-  id     Int      @id @default(autoincrement())
-  nama   String
-  Result Result[]
-  Soal   Soal[]
+  id    Int     @id @default(autoincrement())
+  nama  String
+  Soal  Soal[]
+  Score Score[]
 }
 
 model Soal {
@@ -36,6 +37,7 @@ model Soal {
   pilihan_c     String
   pilihan_d     String
   mapel         Mata_Pelajaran     @relation(fields: [id_mapel], references: [id])
+  Jawaban       Jawaban[]
 
   @@index([id_mapel], map: "Soal_id_mapel_fkey")
 }
@@ -52,18 +54,21 @@ model Jawaban {
   id_soal          Int
   jawaban          Jawaban_jawaban
   is_jawaban_benar Boolean         @default(false)
+  Siswa            Siswa           @relation(fields: [id_siswa], references: [id], map: "Result_id_siswa_fkey")
+  Soal             Soal            @relation(fields: [id_soal], references: [id], map: "Result_id_soal_fkey")
+
+  @@index([id_siswa], map: "Result_id_siswa_fkey")
+  @@index([id_soal], map: "Result_id_soal_fkey")
 }
 
-model Result {
-  id             Int            @id @default(autoincrement())
-  id_siswa       Int
-  id_mapel       Int
-  skor           Float
-  Mata_Pelajaran Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
-  Siswa          Siswa          @relation(fields: [id_siswa], references: [id])
+model Score {
+  id       Int @id @default(autoincrement())
+  id_siswa Int
+  id_mapel Int
+  value    Int
 
-  @@index([id_mapel], map: "Result_id_mapel_fkey")
-  @@index([id_siswa], map: "Result_id_siswa_fkey")
+  siswa Siswa          @relation(fields: [id_siswa], references: [id])
+  mapel Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
 }
 
 enum Soal_jawaban_benar {

@@ -41,9 +41,8 @@ const { PrismaClient } = require("@prisma/client");
 
     // console.log(idSiswa);
     if (tempData.length == 50) {
-      await prisma.result
+      await prisma.jawaban
         .createMany({ data: [...tempData.flat()] })
-        // .catch(() => console.log("error: ", idResult));
         .catch((e) => console.log(e));
       tempData = [];
     }
