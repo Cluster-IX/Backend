@@ -1,0 +1,31 @@
+version: "3"
+
+services: 
+  db: 
+    image: mysql:5.7
+    volumes: 
+      - './mysql_dump:/var/lib/mysql'
+      - './data:/data'
+    environment:
+      UPLOAD_LIMIT: 1G
+      MYSQL_ROOT_PASSWORD: "verysecret"
+      MYSQL_DATABASE: "CBT_JATIM"
+      # MYSQL_USER: "admin"
+      # MYSQL_PASSWORD: "verysecret"
+    ports:
+      - '3306:3306'
+    container_name: db_container
+
+  pma:
+    depends_on:
+      - db
+    image: phpmyadmin
+    ports: 
+      - '3001:80'
+    environment: 
+      PMA_HOST: db 
+      UPLOAD_LIMIT: 1G
+      MYSQL_ROOT_PASSWORD: "verysecret"
+    container_name: pma_container
+
+# Create node server container here
