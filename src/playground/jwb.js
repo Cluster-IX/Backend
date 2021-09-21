@@ -16,7 +16,7 @@ const { PrismaClient } = require("@prisma/client");
 
   console.time("get-jwb2")
   const jawaban_siswa2 = await prisma.$queryRawUnsafe(`\
-    SELECT Siswa.nrp as NRP, t0.id_siswa
+    SELECT Siswa.nrp, Siswa.nama,t0.total
     FROM Siswa
     INNER JOIN
     (
