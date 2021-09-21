@@ -10,7 +10,7 @@ const prisma = new PrismaClient();
   let last;
 
   setInterval(async () => {
-    const table = "result";
+    const table = "jawaban";
     const sum = await prisma[table].count().catch(e => last);
     const max = 500 * 1000 * 280
 

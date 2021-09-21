@@ -55,13 +55,12 @@ model Kota {
 }
 
 model Jawaban {
-  id            Int            @id @default(autoincrement())
+  id            Int    @id @default(autoincrement())
   id_siswa      Int
   id_soal       Int
-  value         Jawaban_value?
-  jawaban_benar Choice?
-  siswa         Siswa          @relation(fields: [id_siswa], references: [id])
-  soal          Soal           @relation(fields: [id_soal], references: [id])
+  jawaban_benar Choice
+  siswa         Siswa  @relation(fields: [id_siswa], references: [id])
+  soal          Soal   @relation(fields: [id_soal], references: [id])
 
   @@index([id_siswa], map: "Jawaban_id_siswa_fkey")
   @@index([id_soal], map: "Jawaban_id_soal_fkey")
@@ -81,13 +80,6 @@ enum Choice {
 }
 
 enum Soal_jawaban_benar {
-  a
-  b
-  c
-  d
-}
-
-enum Jawaban_value {
   a
   b
   c
