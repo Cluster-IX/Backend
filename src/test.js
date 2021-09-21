@@ -15,14 +15,19 @@ const { PrismaClient } = require("@prisma/client");
   let padded_id_kota = id_kota.padStart(3,"0").slice(-2)
   id_kota = undefined
 
+
   const where = {
     siswa: {
-      // nrp: id_kota ? padded_id_kota : nrp || undefined,
       nrp: id_kota ? {startsWith: padded_id_kota} : nrp || undefined,
     },
     id_mapel: Number(id_mapel) || undefined,
     id_siswa: Number(id_siswa) || undefined,
   };
+
+  const orderBy = [
+
+  ]
+
   // console.log(where)
   // return
 

@@ -15,9 +15,11 @@ router.get("/", async (req, res) => {
     id_siswa,
     nama,
     nrp,
+    skor,
+    sortField,
+    sortOrder,
   } = req.query;
   let siswaResult, serialized;
-
 
   const pad = (id) => id.padStart(3, "0").slice(-2);
 
@@ -28,11 +30,17 @@ router.get("/", async (req, res) => {
     },
     id_mapel: Number(id_mapel) || undefined,
     id_siswa: Number(id_siswa) || undefined,
+    skor: Number(skor) || undefined
+  };
+
+  const orderBy = {
+    [sortField]: sortOrder,
   };
 
   const query = {
     take: Number(count),
     skip: Number((page - 1) * count),
+    orderBy: orderBy,
     where: where,
     select: {
       id: true,
@@ -42,33 +50,11 @@ router.get("/", async (req, res) => {
     },
   };
 
-  console.log("---")
+  console.log("---");
   // console.log({ id_mapel, id_kota, id_siswa, nama, nrp });
   console.time("Query");
-  siswaResult = prisma.result.findMany(query);
-  totalResult = prisma.result.count({
-    ...query,
-    select: undefined,
-    take: undefined,
-    skip: undefined,
-  });
-
-  // [siswaResult, totalResult] = await Promise.all([siswaResult, totalResult])
-  [siswaResult] = await Promise.all([siswaResult])
+  siswaResult = await prisma.result.findMany(query);
   console.timeEnd("Query");
-
-  //   console.time("Query");
-  //   siswaResult = await prisma.result.findMany(query);
-  //   console.timeEnd("Query");
-
-  //   console.time("Count");
-  //   totalResult = await prisma.result.count({
-  //     ...query,
-  //     select: undefined,
-  //     take: undefined,
-  //     skip: undefined,
-  //   });
-  //   console.timeEnd("Count");
 
   serialized = {
     total: totalResult,
@@ -84,6 +70,47 @@ router.get("/", async (req, res) => {
   };
 
   res.send(serialized);
+});
+
+router.get("/count", async (req, res) => {
+  const {
+    id_mapel,
+    id_kota,
+    id_siswa,
+    nama,
+    nrp,
+    skor,
+  } = req.query;
+
+  const pad = (id) => id.padStart(3, "0").slice(-2);
+
+  const where = {
+    siswa: {
+      nrp: id_kota ? { startsWith: pad(id_kota) } : nrp || undefined,
+      nama: nama ? { contains: nama } : undefined,
+    },
+    id_mapel: Number(id_mapel) || undefined,
+    id_siswa: Number(id_siswa) || undefined,
+    skor: Number(skor) || undefined
+  };
+
+  const query = {
+    where: where,
+    select: {
+      id: true,
+    },
+  };
+
+  console.log("---");
+  console.time("Count");
+  totalResult = await prisma.result.count({
+    ...query,
+    select: undefined,
+  });
+
+  console.timeEnd("Count");
+
+  res.send({ totalResult });
 });
 
 module.exports = router;
