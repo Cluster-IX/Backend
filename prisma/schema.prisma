@@ -10,7 +10,7 @@ datasource db {
 model Siswa {
   id      Int       @id @default(autoincrement())
   nrp     String    @unique(map: "nrp")
-  nama    String
+  nama    String    @unique(map: "nama")
   Jawaban Jawaban[]
   Result  Result[]
 }
