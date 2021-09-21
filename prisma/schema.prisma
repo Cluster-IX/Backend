@@ -1,31 +1,33 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
 
-generator client {
-  provider = "prisma-client-js"
-}
-
 model Siswa {
   id      Int       @id @default(autoincrement())
-  nrp     String
+  nrp     String    @unique(map: "nrp")
   nama    String
-  Result  Result[]
   Jawaban Jawaban[]
+  Result  Result[]
 }
 
 model Soal {
-  id               Int            @id @default(autoincrement())
-  id_mapel         Int
-  jawaban_benar    Choice        
-  konten           String
-  pilihan_a        String
-  pilihan_b        String
-  pilihan_c        String
-  pilihan_d        String
-  mapel            Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
-  Jawaban          Jawaban[]
+  id            Int                @id @default(autoincrement())
+  id_mapel      Int
+  jawaban_benar Soal_jawaban_benar
+  konten        String
+  pilihan_a     String
+  pilihan_b     String
+  pilihan_c     String
+  pilihan_d     String
+  mapel         Mata_Pelajaran     @relation(fields: [id_mapel], references: [id])
+  Jawaban       Jawaban[]
+
+  @@index([id_mapel], map: "Soal_id_mapel_fkey")
 }
 
 model Result {
@@ -33,15 +35,18 @@ model Result {
   id_siswa Int
   id_mapel Int
   skor     Int
-  siswa    Siswa          @relation(fields: [id_siswa], references: [id])
   mapel    Mata_Pelajaran @relation(fields: [id_mapel], references: [id])
+  siswa    Siswa          @relation(fields: [id_siswa], references: [id])
+
+  @@index([id_mapel], map: "Result_id_mapel_fkey")
+  @@index([id_siswa], map: "Result_id_siswa_fkey")
 }
 
 model Mata_Pelajaran {
   id     Int      @id @default(autoincrement())
   nama   String
-  Soal   Soal[]
   Result Result[]
+  Soal   Soal[]
 }
 
 model Kota {
@@ -54,8 +59,11 @@ model Jawaban {
   id_siswa      Int
   id_soal       Int
   jawaban_benar Choice
-  soal          Soal   @relation(fields: [id_soal], references: [id])
   siswa         Siswa  @relation(fields: [id_siswa], references: [id])
+  soal          Soal   @relation(fields: [id_soal], references: [id])
+
+  @@index([id_siswa], map: "Jawaban_id_siswa_fkey")
+  @@index([id_soal], map: "Jawaban_id_soal_fkey")
 }
 
 model Test {
@@ -65,6 +73,13 @@ model Test {
 }
 
 enum Choice {
+  a
+  b
+  c
+  d
+}
+
+enum Soal_jawaban_benar {
   a
   b
   c

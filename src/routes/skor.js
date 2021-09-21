@@ -16,83 +16,58 @@ router.get("/", async (req, res) => {
     nama,
     nrp,
   } = req.query;
-
   let siswaResult, serialized;
 
-  if (nama || id_kota) {
-    console.log("query 1")
+  console.log({ id_mapel, id_kota, id_siswa, nama, nrp });
 
-    const query = {}
+  const pad = (id) => id.padStart(3, "0").slice(-2);
 
-    query.data = `SELECT Result.id as id, Siswa.nrp as nrp, Siswa.nama as nama, Result.id_mapel as id_mapel, Result.skor as skor
-    FROM Result
-    INNER JOIN Siswa ON Result.id_siswa=Siswa.id
-    INNER JOIN Mata_Pelajaran ON Result.id_mapel=Mata_Pelajaran.id
-    WHERE 1
-    ${nama ? "AND Siswa.nama LIKE '%" +nama+"%'" : ""}
-    ${id_kota && id_kota != 0 ? "AND nrp LIKE '" + id_kota.padStart(3, "0").slice(-2) + "%'" : ""}
-    ${id_mapel && id_mapel != 0 ? "AND id_mapel = " + id_mapel : ""}
-    LIMIT ${count} 
-    OFFSET ${(page - 1) * count}
-      `;
+  const where = {
+    siswa: {
+      nrp: id_kota ? { startsWith: pad(id_kota) } : nrp || undefined,
+      nama: nama ? { contains: nama } : undefined,
+    },
+    id_mapel: Number(id_mapel) || undefined,
+    id_siswa: Number(id_siswa) || undefined,
+  };
 
-    query.count = `SELECT COUNT(Result.id) 
-    FROM Result 
-    INNER JOIN Siswa ON Result.id_siswa=Siswa.id
-    INNER JOIN Mata_Pelajaran ON Result.id_mapel=Mata_Pelajaran.id
-    WHERE 1
-    ${nama ? "AND Siswa.nama LIKE '%" +nama+"%'" : ""}
-    ${id_kota && id_kota != 0 ? "AND nrp LIKE '" + id_kota.padStart(3, "0").slice(-2) + "%'" : ""}
-    ${id_mapel && id_mapel != 0 ? "AND id_mapel = " + id_mapel : ""}
-      `;
+  const query = {
+    take: Number(count),
+    skip: Number((page - 1) * count),
+    where: where,
+    select: {
+      id: true,
+      skor: true,
+      siswa: { select: { nama: true, nrp: true } },
+      id_mapel: true,
+    },
+  };
 
-    console.log(query)
+  console.time("Query");
+  siswaResult = await prisma.result.findMany(query);
+  console.timeEnd("Query");
 
-    siswaResult = await prisma.$queryRawUnsafe(query.data);
-    totalResult = await prisma.$queryRawUnsafe(query.count);
-    totalResult = totalResult[0]['COUNT(Result.id)']
+  console.time("Count");
+  totalResult = await prisma.result.count({
+    ...query,
+    select: undefined,
+    take: undefined,
+    skip: undefined,
+  });
+  console.timeEnd("Count");
 
-    serialized = {
-      total: totalResult,
-      data: siswaResult,
-    };
-
-  } else {
-    console.log("query 2")
-    const query = {
-      take: Number(count),
-      skip: Number((page - 1) * count),
-      where: {},
-      select: {
-        id: true,
-        skor: true,
-        siswa: { select: { nama: true, nrp: true } },
-        id_mapel: true,
-      },
-    };
-
-    if (id_mapel && id_mapel != 0) query.where.id_mapel = Number(id_mapel);
-    if (id_siswa) query.where.id_siswa = Number(id_siswa);
-    if (nrp) query.where.siswa = { nrp };
-
-    siswaResult = await prisma.result.findMany(query);
-    // totalResult = await prisma.result.count({...query});
-
-    console.log(totalResult)
-
-    serialized = {
-      total: totalResult,
-      data: siswaResult.map(
-        ({ id, siswa: { nama: namaSiswa, nrp }, id_mapel, skor }) => ({
-          id,
-          nrp,
-          nama: namaSiswa,
-          id_mapel,
-          skor,
-        })
-      ),
-    };
-  }
+  serialized = {
+    total: totalResult,
+    data: siswaResult.map(
+      ({ id, siswa: { nama: namaSiswa, nrp }, id_mapel, skor }) => ({
+        id,
+        nrp,
+        nama: namaSiswa,
+        id_mapel,
+        skor,
+      })
+    ),
+  };
 
   res.send(serialized);
 });
