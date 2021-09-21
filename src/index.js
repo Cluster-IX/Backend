@@ -12,7 +12,6 @@ app.use(express.urlencoded({extended: true}))
 app.use(express.json())
 
 const routes = [
-  // ["/s", searchRouter],
   ["/skor", skorRouter]
 ]
 

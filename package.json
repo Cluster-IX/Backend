@@ -1,5 +1,8 @@
 {
   "name": "CBT-Backend",
+  "process":{
+    "name": "Backend"
+  },
   "version": "1.0.0",
   "description": "",
   "main": "index.js",
