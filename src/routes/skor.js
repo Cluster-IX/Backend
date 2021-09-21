@@ -18,7 +18,6 @@ router.get("/", async (req, res) => {
   } = req.query;
   let siswaResult, serialized;
 
-  console.log({ id_mapel, id_kota, id_siswa, nama, nrp });
 
   const pad = (id) => id.padStart(3, "0").slice(-2);
 
@@ -43,18 +42,33 @@ router.get("/", async (req, res) => {
     },
   };
 
+  console.log("---")
+  // console.log({ id_mapel, id_kota, id_siswa, nama, nrp });
   console.time("Query");
-  siswaResult = await prisma.result.findMany(query);
-  console.timeEnd("Query");
-
-  console.time("Count");
-  totalResult = await prisma.result.count({
+  siswaResult = prisma.result.findMany(query);
+  totalResult = prisma.result.count({
     ...query,
     select: undefined,
     take: undefined,
     skip: undefined,
   });
-  console.timeEnd("Count");
+
+  // [siswaResult, totalResult] = await Promise.all([siswaResult, totalResult])
+  [siswaResult] = await Promise.all([siswaResult])
+  console.timeEnd("Query");
+
+  //   console.time("Query");
+  //   siswaResult = await prisma.result.findMany(query);
+  //   console.timeEnd("Query");
+
+  //   console.time("Count");
+  //   totalResult = await prisma.result.count({
+  //     ...query,
+  //     select: undefined,
+  //     take: undefined,
+  //     skip: undefined,
+  //   });
+  //   console.timeEnd("Count");
 
   serialized = {
     total: totalResult,
