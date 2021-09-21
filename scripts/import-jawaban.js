@@ -14,7 +14,8 @@ const { PrismaClient } = require("@prisma/client");
 
   let answers = rawAnswer.map((item) => item.jawaban_benar);
 
-  const maxSiswa = 500 * 1000;
+  let maxSiswa = 500 * 1000;
+  // maxSiswa = 1
 
   const maxMapel = 7;
   const maxSoalMapel = 40;
@@ -32,15 +33,22 @@ const { PrismaClient } = require("@prisma/client");
       data.push({
         id_siswa: idSiswa,
         id_soal: idSoal,
-        jawaban,
-        is_jawaban_benar: jawaban == answers[idSoal],
+        value: jawaban,
       });
+
+      // data.push({
+      //   id_siswa: idSiswa,
+      //   id_soal: idSoal,
+      //   jawaban,
+      //   // is_jawaban_benar: jawaban == answers[idSoal],
+      // });
     }
 
     tempData.push(data);
 
-    // console.log(idSiswa);
     if (tempData.length == 50) {
+      // console.log(tempData.flat())
+
       await prisma.jawaban
         .createMany({ data: [...tempData.flat()] })
         .catch((e) => console.log(e));
