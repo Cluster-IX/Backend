@@ -7,6 +7,7 @@ const app = express()
 const searchRouter = require('./routes/search')
 const skorRouter = require('./routes/skor')
 const onDemandRouter = require('./routes/on-demand')
+const completeRouter = require('./routes/complete')
 
 app.use(cors())
 app.use(express.urlencoded({extended: true}))
@@ -14,7 +15,8 @@ app.use(express.json())
 
 const routes = [
   ["/skor", skorRouter],
-  ["/realtime", onDemandRouter]
+  ["/on-demand", onDemandRouter],
+  ["/complete", completeRouter]
 ]
 
 routes.map(([_route, _router]) => {

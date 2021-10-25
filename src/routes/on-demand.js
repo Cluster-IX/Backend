@@ -28,6 +28,14 @@ router.get("/", async (req, res) => {
   console.time("Query");
   // siswaResult = await prisma.
 
+  const conditionals = {
+    id_siswa: () => id_siswa ? `AND id_siswa = ${id_siswa}` : '',
+    id_mapel: () => id_mapel ? `AND id_mapel = ${id_mapel}` : '',
+    nrp: () => nrp ? `AND nrp = ${nrp}` : '',
+    skor: () => skor ? `AND skor = ${skor}` : '',
+    nama: () => nama ? `AND nama LIKE "%${nama}%"` : '',
+  }
+
   siswaResult = await prisma.$queryRawUnsafe(`\
     SELECT Siswa.id, Siswa.nrp, Siswa.nama,t0.skor
     FROM Siswa
@@ -46,7 +54,33 @@ router.get("/", async (req, res) => {
     ) t0
 
     ON Siswa.id = t0.id_siswa
+    WHERE 1
+    ${conditionals.nrp()}
+    ${conditionals.skor()}
+    ${conditionals.nama()}
     `);
+
+    console.log(
+    `SELECT Siswa.id, Siswa.nrp, Siswa.nama,t0.skor
+    FROM Siswa
+    INNER JOIN
+    (
+      SELECT t1.id_siswa, COUNT(*) as skor
+      FROM Jawaban t1
+      WHERE t1.value = (
+        SELECT t2.jawaban_benar
+        FROM Soal t2
+        WHERE t2.id = t1.id_soal
+      )
+      GROUP BY t1.id_siswa
+      LIMIT ${count}
+      OFFSET ${(page - 1) * count}
+    ) t0
+
+    ON Siswa.id = t0.id_siswa
+    WHERE 1`
+
+  )
 
   console.timeEnd("Query");
 
@@ -86,6 +120,7 @@ router.get("/count", async (req, res) => {
   };
 
   console.log("---");
+  console.log({nrp, id_siswa, id_kota})
   console.time("Count");
   totalResult = await prisma.result.count({
     ...query,
